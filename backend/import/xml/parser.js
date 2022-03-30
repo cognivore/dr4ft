@@ -1,7 +1,12 @@
-const parser = require("fast-xml-parser");
+const { XMLParser } = require("fast-xml-parser");
 
 function parse(content) {
-  const parsedContent = parser.parse(content, { ignoreAttributes: false, attributeNamePrefix: "", textNodeName: "text" });
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "",
+    textNodeName: "textNodeName"
+  });
+  const parsedContent = parser.parse(content);
   const root = parsedContent.cockatrice_carddatabase;
   if (!root) {
     throw new Error("XML root node <cockatrice_carddatabase> must be present");
@@ -49,7 +54,7 @@ function parse(content) {
 
 
   cards.card.forEach(c => {
-    const { text: setCode, num = 0, picurl = "", picURL = "", rarity } = c.set;
+    const { textNodeName: setCode, num = 0, picurl = "", picURL = "", rarity } = c.set;
     if (c.token) {
       return;
     }
