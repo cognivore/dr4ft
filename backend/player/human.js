@@ -113,7 +113,15 @@ module.exports = class Human extends Player {
     });
   }
   confirmSelection() {
-    const pack = this.packs.shift();
+    const [pack] = this.packs;
+    // Wrokaround to game crashing with 
+    /* 
+    /home/sweater/github/dr4ft/backend/player/human.js:135
+      const remainingToBurn = Math.min(pack.length, this.burnsPerPack - this.selected.burns.length);
+    */
+    if (!pack || typeof pack.length === 'undefined')
+      return;
+    // End of workaround
     this.selected.picks.forEach((cardId) => {
       const card = find(pack, c => c.cardId === cardId);
       if (!card) {
@@ -129,12 +137,17 @@ module.exports = class Human extends Player {
     });
 
     // Remove burned cards from pack
-    remove(pack, (card) => this.selected.burns.includes(card.cardId));
+    remove(pack, (card) => {
+      logger.info(`GameID: ${this.GameId}, player ${this.name}, burnt: ${card.name}`);
+      this.selected.burns.includes(card.cardId)
+    });
 
     // burn remaining if needed cards
     const remainingToBurn = Math.min(pack.length, this.burnsPerPack - this.selected.burns.length);
-    pack.length-=remainingToBurn;
+    pack.length -= remainingToBurn;
 
+    // We shift here now (see workaround to game crashing note above)
+    this.packs.shift();
     const [next] = this.packs;
     if (!next)
       this.time = 0;
