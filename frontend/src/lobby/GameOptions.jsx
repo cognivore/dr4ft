@@ -162,6 +162,7 @@ const ChaosDraft = ({ picksPerPack }) => (
   <div>
     <Chaos packsNumber={"chaosDraftPacksNumber"} />
     <PicksPerPacks picksPerPack={picksPerPack} />
+    <BurnsPerPacks />
   </div>
 );
 
